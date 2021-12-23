@@ -5,13 +5,13 @@ import numpy as np
 import torch
 import os
 
-TRAIN = pd.read_csv('data_cate_dum.csv')
-VAL = pd.read_excel(r'/home2/b07170235/confiscated_object/沒收物_資料集_20210810/案件沒收/主文/data_主文_val.xlsx', engine='openpyxl')
+TRAIN = pd.read_csv('train_data.csv',encoding='utf-8-sig')
+VAL = pd.read_csv('val_data.csv',encoding='utf-8-sig')
 
 FEATURE = ['contents']
-TARGET = ['categories_2', 'categories_3', 'categories_4','categories_5']
+TARGET = ['categories_2', 'categories_3', 'categories_4','categories_5','degree']
 
-PRETRAINED_MODEL = 'ckiplab/bert-base-chinese'
+PRETRAINED_MODEL = 'hfl/chinese-macbert-base'
 LEARNING_RATE = 5e-5
 NUM_TRAIN_EPOCHS = 10
 TRAIN_BATCH_SIZE = 8
@@ -39,15 +39,15 @@ model = AutoModelForSequenceClassification.from_pretrained(PRETRAINED_MODEL, num
 
 for i in FEATURE:
     train_encoding = tokenizer(TRAIN[i].tolist(), padding=True, truncation=True, max_length=512)
-    # val_encoding = tokenizer(VAL[i].tolist(), padding=True, truncation=True, max_length=512)
+    val_encoding = tokenizer(VAL[i].tolist(), padding=True, truncation=True, max_length=512)
     
     for j in TARGET:
         train_target = TRAIN[j].to_list()
-        # val_target = VAL[j].to_list()
+        val_target = VAL[j].to_list()
 
         training_args = TrainingArguments(
                             save_total_limit=1,
-                            output_dir=os.path.join(BASE_OUTPUT_DIR, '案件_主文_results/%s_%s'%(i,j)),   # output directory
+                            output_dir=os.path.join(BASE_OUTPUT_DIR, 'run1_results/%s_%s'%(i,j)),   # output directory
                             num_train_epochs=NUM_TRAIN_EPOCHS,              # total number of training epochs
                             per_device_train_batch_size=TRAIN_BATCH_SIZE,  # batch size per device during training
                             per_device_eval_batch_size=50,   # batch size for evaluation
@@ -58,7 +58,8 @@ for i in FEATURE:
                             learning_rate=LEARNING_RATE,
                             evaluation_strategy='epoch',
                             load_best_model_at_end=True,
-                            metric_for_best_model='eval_loss'
+                            metric_for_best_model='eval_loss',
+                            save_strategy='epoch'
                             )
 
         trainer = Trainer(

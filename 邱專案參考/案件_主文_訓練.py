@@ -6,7 +6,7 @@ import torch
 import os
 
 TRAIN = pd.read_excel(r'/home2/b07170235/confiscated_object/沒收物_資料集_20210810/案件沒收/主文/data_主文_train.xlsx', engine='openpyxl')
-VAL = pd.read_excel(r'/home2/b07170235/confiscated_object/沒收物_資料集_20210810/案件沒收/主文/data_主文_val.xlsx'', engine='openpyxl')
+VAL = pd.read_excel(r'/home2/b07170235/confiscated_object/沒收物_資料集_20210810/案件沒收/主文/data_主文_val.xlsx', engine='openpyxl')
 
 FEATURE = ['content', 'content_去法條']
 TARGET = ['違禁物', '犯罪工具', '犯罪所得']
